@@ -28,7 +28,7 @@ function EditPost() {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch(`http://localhost:5000/api/posts/${id}`, {
+      const res = await fetch(`https://blogsite-fxsk.onrender.com/api/posts/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
