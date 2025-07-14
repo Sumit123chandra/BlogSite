@@ -8,7 +8,7 @@ function Home() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/posts")
+    fetch("https://blogsite-fxsk.onrender.com/api/posts")
       .then((res) => res.json())
       .then((data) => {
         setPosts(data);

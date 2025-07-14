@@ -11,7 +11,7 @@ function SinglePost() {
   const currentUserId = getUserIdFromToken();
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/posts/${id}`)
+    fetch(`https://blogsite-fxsk.onrender.com/api/posts/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setPost(data);

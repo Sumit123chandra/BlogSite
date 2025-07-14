@@ -16,7 +16,7 @@ function CreatePost() {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/posts", {
+      const res = await fetch("https://blogsite-fxsk.onrender.com/api/posts", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

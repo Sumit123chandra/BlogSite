@@ -10,7 +10,7 @@ function EditPost() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/posts/${id}`)
+    fetch(`https://blogsite-fxsk.onrender.com/api/posts/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setTitle(data.title);
