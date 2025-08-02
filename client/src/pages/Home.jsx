@@ -22,7 +22,7 @@ function Home() {
 
   if (loading) return <p className="text-center mt-10 text-white">Loading posts...</p>;
 
-  // Filter posts based on search
+  // ✅ Filter posts based on search
   const filteredPosts = posts.filter(
     (post) =>
       post.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -65,6 +65,16 @@ function Home() {
                 transition={{ delay: index * 0.1 }}
               >
                 <Link to={`/post/${post._id}`}>
+                  
+                  {/* ✅ Show post image if available */}
+                  {post.image && (
+                    <img
+                      src={post.image}
+                      alt={post.title}
+                      className="w-full h-48 object-cover rounded-lg mb-3"
+                    />
+                  )}
+
                   <h2 className="text-2xl font-bold text-gray-800 mb-2">{post.title}</h2>
                   <p className="text-gray-600 mb-2">
                     {post.content.length > 150
@@ -72,6 +82,7 @@ function Home() {
                       : post.content}
                   </p>
                 </Link>
+
                 <div className="text-sm text-gray-500 mt-2">
                   <p>Author: {post.author?.username || "Unknown"}</p>
                   <p className="text-xs">

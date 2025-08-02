@@ -4,25 +4,30 @@ import { useNavigate } from "react-router-dom";
 function CreatePost() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [image, setImage] = useState(null);  // ✅ add image state
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const token = localStorage.getItem("token");
     if (!token) {
       alert("Please log in to create a post.");
       return;
     }
 
+    // ✅ FormData instead of JSON
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("content", content);
+    if (image) formData.append("image", image);
+
     try {
       const res = await fetch("https://blogsite-fxsk.onrender.com/api/posts", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`, // ✅ NO Content-Type (FormData sets it)
         },
-        body: JSON.stringify({ title, content }),
+        body: formData,
       });
 
       if (res.ok) {
@@ -48,25 +53,37 @@ function CreatePost() {
           Create New Blog Post
         </h2>
 
+        {/* Title */}
         <div className="mb-4">
           <label className="block mb-1 font-medium">Title</label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring focus:border-green-500"
+            className="w-full border border-gray-300 rounded-xl px-3 py-2"
             required
           />
         </div>
 
-        <div className="mb-6">
+        {/* Content */}
+        <div className="mb-4">
           <label className="block mb-1 font-medium">Content</label>
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            className="w-full border border-gray-300 rounded-xl px-3 py-2 h-40 resize-none focus:outline-none focus:ring focus:border-green-500"
+            className="w-full border border-gray-300 rounded-xl px-3 py-2 h-40 resize-none"
             required
           ></textarea>
+        </div>
+
+        {/* ✅ Image Upload */}
+        <div className="mb-4">
+          <label className="block mb-1 font-medium">Upload Image</label>
+          <input 
+            type="file"
+            onChange={(e) => setImage(e.target.files[0])}
+            className="w-full border border-gray-300 rounded-xl px-3 py-2"
+          />
         </div>
 
         <button

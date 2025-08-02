@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
+const Post = require("../models/Post");
 const verifyToken = require("../middleware/authMiddleware");
+const upload = require("../middleware/upload");
+
 const {
   createPost,
   getAllPosts,
@@ -9,7 +12,7 @@ const {
   deletePost
 } = require("../controllers/postController");
 
-router.post("/", verifyToken, createPost);
+router.post("/", verifyToken, upload.single("image"), createPost);
 router.get("/", getAllPosts);
 router.get("/:id", getPostById);
 router.put("/:id", verifyToken, updatePost);
