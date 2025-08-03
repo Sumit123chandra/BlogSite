@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Menu, X } from "lucide-react"; // requires `lucide-react` for icons
+import { Menu, X } from "lucide-react"; // for icons
 
 function Navbar() {
   const [user, setUser] = useState(null);
@@ -25,20 +25,27 @@ function Navbar() {
     <nav className="bg-gradient-to-r from-blue-700 to-blue-500 text-white px-6 py-4 shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         {/* Logo */}
-        <Link to="/" className="text-3xl font-extrabold tracking-tight hover:scale-105 transition">
+        <Link
+          to="/"
+          className="text-3xl font-extrabold tracking-tight hover:scale-105 transition"
+        >
           BlogSite
         </Link>
 
-        {/* Desktop Nav */}
+        {/* ✅ Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-6 text-lg font-medium">
           <Link to="/" className="hover:text-yellow-300 transition duration-300">
             Home
           </Link>
-
-          <Link to="/about" className="hover:text-yellow-300 transition duration-300">About</Link>
-          <Link to="/contact" className="hover:text-yellow-300 transition duration-300">Contact</Link>
-          <Link to="/privacy-policy" className="hover:text-yellow-300 transition duration-300">Privacy Policy</Link>
-
+          <Link to="/about" className="hover:text-yellow-300 transition duration-300">
+            About
+          </Link>
+          <Link to="/contact" className="hover:text-yellow-300 transition duration-300">
+            Contact
+          </Link>
+          <Link to="/privacy-policy" className="hover:text-yellow-300 transition duration-300">
+            Privacy Policy
+          </Link>
 
           {user ? (
             <>
@@ -65,7 +72,7 @@ function Navbar() {
           )}
         </div>
 
-        {/* Mobile Nav Toggle */}
+        {/* ✅ Mobile Nav Toggle */}
         <div className="md:hidden">
           <button onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X size={26} /> : <Menu size={26} />}
@@ -73,10 +80,21 @@ function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* ✅ Mobile Menu Dropdown */}
       {menuOpen && (
         <div className="md:hidden mt-4 flex flex-col gap-4 text-center text-lg bg-blue-600 py-4 rounded-lg">
-          <Link to="/" onClick={() => setMenuOpen(false)} className="hover:text-yellow-300">Home</Link>
+          <Link to="/" onClick={() => setMenuOpen(false)} className="hover:text-yellow-300">
+            Home
+          </Link>
+          <Link to="/about" onClick={() => setMenuOpen(false)} className="hover:text-yellow-300">
+            About
+          </Link>
+          <Link to="/contact" onClick={() => setMenuOpen(false)} className="hover:text-yellow-300">
+            Contact
+          </Link>
+          <Link to="/privacy-policy" onClick={() => setMenuOpen(false)} className="hover:text-yellow-300">
+            Privacy Policy
+          </Link>
 
           {user ? (
             <>
