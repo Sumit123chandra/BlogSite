@@ -18,17 +18,30 @@ function Login() {
       });
 
       const data = await res.json();
+      console.log("✅ Login response:", data);  // 👈 Debugging log
+
       if (res.ok) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
-        alert("Logged in successfully!");
+        // ✅ Save token if present
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+        }
+
+        // ✅ Save user only if it's an object
+        if (data.user && typeof data.user === "object") {
+          localStorage.setItem("user", JSON.stringify(data.user));
+        } else {
+          console.warn("⚠️ No valid user object returned from backend");
+          localStorage.removeItem("user"); // just to be safe
+        }
+
+        alert("✅ Logged in successfully!");
         navigate("/");
       } else {
-        alert(data.message || "Login failed");
+        alert(data.message || "❌ Login failed");
       }
     } catch (err) {
-      console.error("Login error:", err);
-      alert("Something went wrong.");
+      console.error("🚨 Login error:", err);
+      alert("Something went wrong. Please try again later.");
     }
   };
 

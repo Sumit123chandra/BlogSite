@@ -19,17 +19,30 @@ function Register() {
       });
 
       const data = await res.json();
+      console.log("✅ Register response:", data); // 👈 Debugging log
+
       if (res.ok) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user)); // ✅ Save user
-        alert("Registered successfully!");
+        // ✅ Save token only if present
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+        }
+
+        // ✅ Only save user if it’s an object
+        if (data.user && typeof data.user === "object") {
+          localStorage.setItem("user", JSON.stringify(data.user));
+        } else {
+          console.warn("⚠️ No valid user object returned from backend");
+          localStorage.removeItem("user"); // remove any broken data
+        }
+
+        alert("✅ Registered successfully!");
         navigate("/");
       } else {
-        alert(data.message || "Registration failed");
+        alert(data.message || "❌ Registration failed");
       }
     } catch (err) {
-      console.error("Register error:", err);
-      alert("Something went wrong.");
+      console.error("🚨 Register error:", err);
+      alert("Something went wrong. Please try again.");
     }
   };
 
