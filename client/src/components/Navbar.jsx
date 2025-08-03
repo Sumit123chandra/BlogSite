@@ -35,6 +35,11 @@ function Navbar() {
             Home
           </Link>
 
+          <Link to="/about" className="hover:text-yellow-300 transition duration-300">About</Link>
+          <Link to="/contact" className="hover:text-yellow-300 transition duration-300">Contact</Link>
+          <Link to="/privacy-policy" className="hover:text-yellow-300 transition duration-300">Privacy Policy</Link>
+
+
           {user ? (
             <>
               <Link to="/create" className="hover:text-yellow-300 transition duration-300">

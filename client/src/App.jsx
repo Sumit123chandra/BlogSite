@@ -8,6 +8,10 @@ import EditPost from "./pages/EditPost";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Footer from "./components/Footer";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+
 
 function App() {
   return (
@@ -35,7 +39,9 @@ function App() {
             </ProtectedRoute>
           } 
         />
-
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/post/:id" element={<SinglePost />} />
       </Routes>
       <Footer />
