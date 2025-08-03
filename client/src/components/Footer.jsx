@@ -8,7 +8,7 @@ function Footer() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
-      className="bg-gradient-to-r from-gray-900 via-black to-gray-800 text-white py-8 mt-10 shadow-inner"
+      className="bg-gradient-to-r from-gray-900 via-black to-gray-800 text-white py-8 mt-10 shadow-inner relative z-50"
     >
       <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
         <div className="mb-4 md:mb-0 text-center md:text-left">
@@ -19,7 +19,7 @@ function Footer() {
 
         <div className="flex gap-6 text-2xl">
           <a
-            href="https://github.com"
+            href="https://github.com/Sumit123chandra"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-blue-400 transition"
@@ -27,7 +27,7 @@ function Footer() {
             <FaGithub />
           </a>
           <a
-            href="https://linkedin.com"
+            href="https://www.linkedin.com/in/sumit-chandra-925014258"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-blue-400 transition"
@@ -35,7 +35,7 @@ function Footer() {
             <FaLinkedin />
           </a>
           <a
-            href="mailto:your@email.com"
+            href="mailto:chandra78.sumit1@gmail.com"
             className="hover:text-blue-400 transition"
           >
             <FaEnvelope />
