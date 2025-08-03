@@ -1,11 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Particles from "react-tsparticles";
+import { loadSlim } from "tsparticles-slim";  // ✅ lighter version
 
 function CreatePost() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [image, setImage] = useState(null);  // ✅ add image state
+  const [image, setImage] = useState(null);
   const navigate = useNavigate();
+
+  // ✅ tsparticles init with slim version
+  const particlesInit = async (main) => {
+    await loadSlim(main);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -15,7 +22,7 @@ function CreatePost() {
       return;
     }
 
-    // ✅ FormData instead of JSON
+    // ✅ Using FormData for image upload
     const formData = new FormData();
     formData.append("title", title);
     formData.append("content", content);
@@ -24,9 +31,7 @@ function CreatePost() {
     try {
       const res = await fetch("https://blogsite-fxsk.onrender.com/api/posts", {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`, // ✅ NO Content-Type (FormData sets it)
-        },
+        headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
 
@@ -44,10 +49,29 @@ function CreatePost() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+    <div className="relative min-h-screen flex justify-center items-center">
+      
+      {/* 🎉 ✅ Particle Background */}
+      <Particles
+        id="tsparticles"
+        init={particlesInit}
+        options={{
+          background: { color: "#0d1117" }, // ✅ cool dark background
+          particles: {
+            number: { value: 60 },
+            color: { value: ["#00ffff", "#ff00ff", "#ffcc00"] }, // ✨ neon particles
+            links: { enable: true, color: "#ffffff" },
+            move: { enable: true, speed: 1 },
+            size: { value: 3 },
+          },
+        }}
+        className="absolute top-0 left-0 w-full h-full -z-10"
+      />
+
+      {/* ✅ Form */}
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-xl shadow-md w-full max-w-2xl"
+        className="bg-white/90 backdrop-blur-md p-8 rounded-xl shadow-md w-full max-w-2xl relative z-10"
       >
         <h2 className="text-2xl font-bold mb-6 text-center text-blue-800">
           Create New Blog Post
@@ -76,7 +100,7 @@ function CreatePost() {
           ></textarea>
         </div>
 
-        {/* ✅ Image Upload */}
+        {/* Image Upload */}
         <div className="mb-4">
           <label className="block mb-1 font-medium">Upload Image</label>
           <input 
