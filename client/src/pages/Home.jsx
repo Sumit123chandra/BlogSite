@@ -15,9 +15,10 @@ const particlesInit = async (main) => {
    const [search, setSearch] = useState("");
 
    useEffect(() => {
-     fetch("https://blogsite-fxsk.onrender.com/api/posts")
+     axios.get("https://blogsite-fxsk.onrender.com/api/posts")
        .then((res) => res.json())
        .then((data) => {
+         console.log("Posts fetched: ",data);
          setPosts(data);
          setLoading(false);
        })
