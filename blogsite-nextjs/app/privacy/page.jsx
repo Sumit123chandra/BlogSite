@@ -29,13 +29,13 @@ export default function PrivacyPolicyPage() {
         <h2 className="text-2xl font-semibold mt-6">Third-Party Services</h2>
         <p>
           We may use third-party services (hosting, analytics, ads) that have their own privacy
-          policies. We recommend reviewing those services for details.
+          policies. Please review those services for details.
         </p>
 
         <h2 className="text-2xl font-semibold mt-6">Contact</h2>
         <p>
           Questions about this policy? Email{" "}
-          <a href="mailto:contact@blogsite.com" className="text-blue-400 hover:underline">
+          <a href="mailto:chandra78.sumit1@gmail.com" className="text-blue-400 hover:underline">
             contact@blogsite.com
           </a>
           .
