@@ -4,6 +4,47 @@ import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import PostActionsWrapper from "@/components/PostActionsWrapper"; // client wrapper
 
+import api from "@/lib/clientApi";
+
+export async function generateMetadata({ params }) {
+  try {
+    const res = await api.get(`/api/posts/${params.slug}`);
+    const post = res.data;
+
+    return {
+      title: `${post.title} | BlogSite`,
+      description: post.content.slice(0, 150) + "...",
+      openGraph: {
+        title: post.title,
+        description: post.content.slice(0, 150) + "...",
+        url: `https://blog-site-silk-nine.vercel.app/blog/${params.slug}`,
+        siteName: "BlogSite",
+        images: [
+          {
+            url: post.image || "/file.svg", // fallback image
+            width: 800,
+            height: 600,
+          },
+        ],
+        locale: "en_US",
+        type: "article",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: post.title,
+        description: post.content.slice(0, 150) + "...",
+        images: [post.image || "/file.svg"],
+      },
+    };
+  } catch (error) {
+    return {
+      title: "Blog Post | BlogSite",
+      description: "Read amazing blog posts on BlogSite.",
+    };
+  }
+}
+
+
 export async function generateStaticParams() {
   const client = await clientPromise;
   const db = client.db("blogsite");

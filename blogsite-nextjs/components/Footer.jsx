@@ -24,7 +24,7 @@ export default function Footer() {
           <ul className="space-y-2 text-gray-300">
             <li><FooterLink href="/about">About</FooterLink></li>
             <li><FooterLink href="/contact">Contact</FooterLink></li>
-            <li><FooterLink href="/privacy-policy">Privacy Policy</FooterLink></li>
+            <li><FooterLink href="/privacy">Privacy Policy</FooterLink></li>
           </ul>
         </div>
 

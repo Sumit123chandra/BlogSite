@@ -31,7 +31,7 @@ export default function Navbar() {
           <NavLink href="/">Home</NavLink>
           <NavLink href="/about">About</NavLink>
           <NavLink href="/contact">Contact</NavLink>
-          <NavLink href="/privacy-policy">Privacy</NavLink>
+          <NavLink href="/privacy">Privacy</NavLink>
 
           {user === undefined ? (
             <span className="animate-pulse text-gray-300">Loading...</span>

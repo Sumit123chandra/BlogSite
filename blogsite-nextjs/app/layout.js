@@ -5,9 +5,51 @@ import { AuthProvider } from "@/components/AuthProvider";
 import Footer from "@/components/Footer";
 
 export const metadata = {
-  title: "Blog",
-  description: "My blog",
+  metadataBase: new URL("https://blog-site-silk-nine.vercel.app"),
+  title: {
+    default: "BlogSite - Share Your Thoughts with the World",
+    template: "%s | BlogSite",
+  },
+  description:
+    "BlogSite is a modern blogging platform where you can share your stories, ideas, and knowledge with the world.",
+  keywords: ["blog", "BlogSite", "write blogs", "modern blog platform", "share stories"],
+  authors: [{ name: "BlogSite Team" }],
+  openGraph: {
+    title: "BlogSite - Share Your Thoughts with the World",
+    description:
+      "A modern blogging platform where you can write, edit, and share blogs with the world.",
+    url: "https://blog-site-silk-nine.vercel.app",
+    siteName: "BlogSite",
+    images: [
+      {
+        url: "/file.svg", // you can replace with your logo or a banner image
+        width: 800,
+        height: 600,
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "BlogSite - Share Your Thoughts with the World",
+    description:
+      "A modern blogging platform where you can write, edit, and share blogs with the world.",
+    images: ["/file.svg"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
+
 
 export default function RootLayout({ children }) {
   return (
