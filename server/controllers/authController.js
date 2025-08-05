@@ -6,13 +6,21 @@ const register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ message: "Email already exists" });
+    // 🔒 Validate fields
+    if (!username || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
 
-    // Hash password
+    // 🔍 Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+
+    // 🔐 Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // 🧾 Create new user
     const newUser = new User({
       username,
       email,
@@ -20,12 +28,31 @@ const register = async (req, res) => {
     });
 
     await newUser.save();
-    res.status(201).json({ message: "User created successfully" });
+
+    // 🔑 Generate token (optional for immediate login)
+    const token = jwt.sign(
+      { userId: newUser._id, username: newUser.username },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    // ✅ Respond with token and user data
+    res.status(201).json({
+      message: "User created successfully",
+      token,
+      user: {
+        id: newUser._id,
+        username: newUser.username,
+        email: newUser.email
+      }
+    });
 
   } catch (error) {
-    res.status(500).json({ message: "Error in registration", error });
+    console.error("Register Error:", error);
+    res.status(500).json({ message: "Error in registration", error: error.message });
   }
 };
+
 
 const login = async (req, res) => {
   try {
