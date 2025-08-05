@@ -6,7 +6,8 @@ const createPost = async (req, res) => {
       title: req.body.title,
       content: req.body.content,
       author: req.user.userId,
-      image: req.file ? req.file.path : null  // ✅ Cloudinary URL will come here
+      image: req.body.image || null
+
     });
 
     const saved = await post.save();
