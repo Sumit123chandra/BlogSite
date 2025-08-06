@@ -111,6 +111,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       {/* Place script in head so crawlers find it */}
       <head>
+        <meta name="google-adsense-account" content="ca-pub-7164455649602046"></meta>
         {/* If you already use metadata (Next injects it), this head is additive */}
         <script
           type="application/ld+json"
