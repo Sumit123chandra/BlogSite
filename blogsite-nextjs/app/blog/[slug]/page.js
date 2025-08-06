@@ -4,7 +4,8 @@ import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import PostActionsWrapper from "@/components/PostActionsWrapper"; // client wrapper
 
-import api from "@/lib/clientApi";
+// NOTE: we intentionally do NOT import next/head because this is a server component
+// and we're injecting JSON-LD directly.
 
 export async function generateMetadata({ params }) {
   // Unwrap params (Next 15+)
@@ -66,8 +67,6 @@ export async function generateMetadata({ params }) {
     };
   }
 }
-
-
 
 export async function generateStaticParams() {
   const client = await clientPromise;
@@ -136,42 +135,46 @@ export default async function BlogPost(props) {
   }
 
   const createdDate = safePost.createdAt ? new Date(safePost.createdAt).toLocaleString() : "";
+  const isoPublished = safePost.createdAt ?? new Date().toISOString();
+  const isoModified = safePost.updatedAt ?? safePost.createdAt ?? new Date().toISOString();
+  const postUrl = `https://blog-site-silk-nine.vercel.app/blog/${safePost.slug ?? safePost._id}`;
+
+  // JSON-LD structured data for the article (server-rendered)
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: safePost.title,
+    description: (safePost.content || "").slice(0, 150) + (safePost.content?.length > 150 ? "..." : ""),
+    author: {
+      "@type": "Person",
+      name: authorName,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "BlogSite",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://blog-site-silk-nine.vercel.app/file.svg",
+      },
+    },
+    datePublished: isoPublished,
+    dateModified: isoModified,
+    image: safePost.image || "https://blog-site-silk-nine.vercel.app/file.svg",
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": postUrl,
+    },
+  };
 
   return (
     <main className="p-6 max-w-3xl mx-auto">
-
       {/* JSON-LD structured data for the article (server-rendered) */}
-<script
-  type="application/ld+json"
-  dangerouslySetInnerHTML={{
-    __html: JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "Article",
-      "headline": safePost.title,
-      "description": (safePost.content || "").slice(0, 150) + (safePost.content?.length > 150 ? "..." : ""),
-      "author": {
-        "@type": "Person",
-        "name": authorName
-      },
-      "publisher": {
-        "@type": "Organization",
-        "name": "BlogSite",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "https://blog-site-silk-nine.vercel.app/file.svg"
-        }
-      },
-      "datePublished": safePost.createdAt || new Date().toISOString(),
-      "dateModified": safePost.updatedAt || safePost.createdAt || new Date().toISOString(),
-      "image": safePost.image || "https://blog-site-silk-nine.vercel.app/file.svg",
-      "mainEntityOfPage": {
-        "@type": "WebPage",
-        "@id": `https://blog-site-silk-nine.vercel.app/blog/${safePost.slug ?? safePost._id}`
-      }
-    }),
-  }}
-/>
-
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd),
+        }}
+      />
 
       <article className="relative z-20 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 glass-inner shadow-2xl">
         {safePost.image && (
