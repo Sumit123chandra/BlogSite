@@ -7,21 +7,43 @@ import PostActionsWrapper from "@/components/PostActionsWrapper"; // client wrap
 import api from "@/lib/clientApi";
 
 export async function generateMetadata({ params }) {
+  // Unwrap params (Next 15+)
+  const p = await params;
+  const slug = p?.slug;
+
+  // server-safe backend base
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://blogsite-fxsk.onrender.com";
+
+  if (!slug) {
+    return {
+      title: "Blog Post | BlogSite",
+      description: "Read amazing blog posts on BlogSite.",
+    };
+  }
+
   try {
-    const res = await api.get(`/api/posts/${params.slug}`);
-    const post = res.data;
+    const res = await fetch(`${API_BASE}/api/posts/${encodeURIComponent(slug)}`, {
+      // server fetch; no credentials needed for public content
+      next: { revalidate: 60 }, // optional: revalidate metadata every 60s
+    });
+
+    if (!res.ok) throw new Error("Failed to fetch post metadata");
+
+    const post = await res.json();
+
+    const excerpt = (post.content || "").slice(0, 150) + (post.content?.length > 150 ? "..." : "");
 
     return {
       title: `${post.title} | BlogSite`,
-      description: post.content.slice(0, 150) + "...",
+      description: excerpt,
       openGraph: {
         title: post.title,
-        description: post.content.slice(0, 150) + "...",
-        url: `https://blog-site-silk-nine.vercel.app/blog/${params.slug}`,
+        description: excerpt,
+        url: `https://blog-site-silk-nine.vercel.app/blog/${slug}`,
         siteName: "BlogSite",
         images: [
           {
-            url: post.image || "/file.svg", // fallback image
+            url: post.image || "/file.svg",
             width: 800,
             height: 600,
           },
@@ -32,17 +54,19 @@ export async function generateMetadata({ params }) {
       twitter: {
         card: "summary_large_image",
         title: post.title,
-        description: post.content.slice(0, 150) + "...",
+        description: excerpt,
         images: [post.image || "/file.svg"],
       },
     };
-  } catch (error) {
+  } catch (err) {
+    // fallback metadata
     return {
       title: "Blog Post | BlogSite",
       description: "Read amazing blog posts on BlogSite.",
     };
   }
 }
+
 
 
 export async function generateStaticParams() {
