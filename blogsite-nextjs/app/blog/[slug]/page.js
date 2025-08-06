@@ -139,6 +139,40 @@ export default async function BlogPost(props) {
 
   return (
     <main className="p-6 max-w-3xl mx-auto">
+
+      {/* JSON-LD structured data for the article (server-rendered) */}
+<script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{
+    __html: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": safePost.title,
+      "description": (safePost.content || "").slice(0, 150) + (safePost.content?.length > 150 ? "..." : ""),
+      "author": {
+        "@type": "Person",
+        "name": authorName
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "BlogSite",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://blog-site-silk-nine.vercel.app/file.svg"
+        }
+      },
+      "datePublished": safePost.createdAt || new Date().toISOString(),
+      "dateModified": safePost.updatedAt || safePost.createdAt || new Date().toISOString(),
+      "image": safePost.image || "https://blog-site-silk-nine.vercel.app/file.svg",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": `https://blog-site-silk-nine.vercel.app/blog/${safePost.slug ?? safePost._id}`
+      }
+    }),
+  }}
+/>
+
+
       <article className="relative z-20 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 glass-inner shadow-2xl">
         {safePost.image && (
           <div className="w-full h-72 relative rounded-lg overflow-hidden mb-6 animate-fadeInUp">
