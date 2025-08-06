@@ -2,17 +2,12 @@
 import Image from "next/image";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
-import PostActionsWrapper from "@/components/PostActionsWrapper"; // client wrapper
-
-// NOTE: we intentionally do NOT import next/head because this is a server component
-// and we're injecting JSON-LD directly.
+import PostActionsWrapper from "@/components/PostActionsWrapper";
+import { Metadata } from "next";
 
 export async function generateMetadata({ params }) {
-  // Unwrap params (Next 15+)
   const p = await params;
   const slug = p?.slug;
-
-  // server-safe backend base
   const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://blogsite-fxsk.onrender.com";
 
   if (!slug) {
@@ -24,15 +19,13 @@ export async function generateMetadata({ params }) {
 
   try {
     const res = await fetch(`${API_BASE}/api/posts/${encodeURIComponent(slug)}`, {
-      // server fetch; no credentials needed for public content
-      next: { revalidate: 60 }, // optional: revalidate metadata every 60s
+      next: { revalidate: 60 },
     });
-
     if (!res.ok) throw new Error("Failed to fetch post metadata");
 
     const post = await res.json();
-
     const excerpt = (post.content || "").slice(0, 150) + (post.content?.length > 150 ? "..." : "");
+    const url = `https://blog-site-silk-nine.vercel.app/blog/${slug}`;
 
     return {
       title: `${post.title} | BlogSite`,
@@ -40,7 +33,7 @@ export async function generateMetadata({ params }) {
       openGraph: {
         title: post.title,
         description: excerpt,
-        url: `https://blog-site-silk-nine.vercel.app/blog/${slug}`,
+        url,
         siteName: "BlogSite",
         images: [
           {
@@ -59,8 +52,7 @@ export async function generateMetadata({ params }) {
         images: [post.image || "/file.svg"],
       },
     };
-  } catch (err) {
-    // fallback metadata
+  } catch {
     return {
       title: "Blog Post | BlogSite",
       description: "Read amazing blog posts on BlogSite.",
@@ -72,53 +64,41 @@ export async function generateStaticParams() {
   const client = await clientPromise;
   const db = client.db("blogsite");
 
-  const posts = await db
-    .collection("posts")
-    .find({}, { projection: { slug: 1 } })
-    .toArray();
+  const posts = await db.collection("posts").find({}, { projection: { slug: 1 } }).toArray();
 
-  return posts.map((p) => {
-    const slugOrId = p.slug ?? (p._id ? p._id.toString() : "");
-    return { slug: slugOrId };
-  });
+  return posts.map((p) => ({
+    slug: p.slug ?? p._id.toString(),
+  }));
 }
 
 function makeSafe(doc) {
   if (!doc) return null;
   const safe = JSON.parse(JSON.stringify(doc));
-  safe._id = doc._id?.toString ? doc._id.toString() : safe._id;
-  if (doc.author && typeof doc.author === "object" && doc.author.toString) {
-    safe.author = doc.author.toString();
-  }
-  if (doc.createdAt && doc.createdAt.toISOString) safe.createdAt = doc.createdAt.toISOString();
-  if (doc.updatedAt && doc.updatedAt.toISOString) safe.updatedAt = doc.updatedAt.toISOString();
+  safe._id = doc._id?.toString?.() ?? safe._id;
+  safe.author = doc.author?.toString?.() ?? safe.author;
+  safe.createdAt = doc.createdAt?.toISOString?.() ?? safe.createdAt;
+  safe.updatedAt = doc.updatedAt?.toISOString?.() ?? safe.updatedAt;
   return safe;
 }
 
-export default async function BlogPost(props) {
-  const { params } = props;
+export default async function BlogPost({ params }) {
   const resolvedParams = typeof params?.then === "function" ? await params : params;
   const slug = resolvedParams?.slug;
 
   const client = await clientPromise;
   const db = client.db("blogsite");
 
-  let post = null;
-  if (slug) {
-    post = await db.collection("posts").findOne({ slug });
-  }
-
-  if (!post && slug && /^[0-9a-fA-F]{24}$/.test(slug)) {
-    try {
-      post = await db.collection("posts").findOne({ _id: new ObjectId(slug) });
-    } catch {}
-  }
+  let post =
+    (await db.collection("posts").findOne({ slug })) ||
+    (/^[0-9a-fA-F]{24}$/.test(slug)
+      ? await db.collection("posts").findOne({ _id: new ObjectId(slug) })
+      : null);
 
   if (!post) return <div className="p-6">Post not found.</div>;
 
   const safePost = makeSafe(post);
 
-  // resolve author display name
+  // Resolve author display name
   let authorName = "Unknown";
   if (post.author && typeof post.author === "object" && post.author.username) {
     authorName = post.author.username;
@@ -127,24 +107,28 @@ export default async function BlogPost(props) {
       const authorDoc = await db
         .collection("users")
         .findOne({ _id: new ObjectId(safePost.author) }, { projection: { username: 1 } });
-      if (authorDoc?.username) authorName = authorDoc.username;
-      else authorName = safePost.author;
+      authorName = authorDoc?.username ?? safePost.author;
     } catch {
       authorName = safePost.author;
     }
   }
 
-  const createdDate = safePost.createdAt ? new Date(safePost.createdAt).toLocaleString() : "";
+  const createdDate = safePost.createdAt
+    ? new Date(safePost.createdAt).toLocaleString()
+    : "";
   const isoPublished = safePost.createdAt ?? new Date().toISOString();
   const isoModified = safePost.updatedAt ?? safePost.createdAt ?? new Date().toISOString();
   const postUrl = `https://blog-site-silk-nine.vercel.app/blog/${safePost.slug ?? safePost._id}`;
+  const excerpt =
+    (safePost.content || "").slice(0, 150) +
+    (safePost.content?.length > 150 ? "..." : "");
 
-  // JSON-LD structured data for the article (server-rendered)
+  // JSON-LD structured data
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: safePost.title,
-    description: (safePost.content || "").slice(0, 150) + (safePost.content?.length > 150 ? "..." : ""),
+    description: excerpt,
     author: {
       "@type": "Person",
       name: authorName,
@@ -168,7 +152,20 @@ export default async function BlogPost(props) {
 
   return (
     <main className="p-6 max-w-3xl mx-auto">
-      {/* JSON-LD structured data for the article (server-rendered) */}
+      {/* OpenGraph + Twitter Meta Tags */}
+      <head>
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={safePost.title} />
+        <meta property="og:description" content={excerpt} />
+        <meta property="og:image" content={safePost.image || "https://blog-site-silk-nine.vercel.app/file.svg"} />
+        <meta property="og:url" content={postUrl} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={safePost.title} />
+        <meta name="twitter:description" content={excerpt} />
+        <meta name="twitter:image" content={safePost.image || "https://blog-site-silk-nine.vercel.app/file.svg"} />
+      </head>
+
+      {/* JSON-LD for Rich Results */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -206,7 +203,6 @@ export default async function BlogPost(props) {
           {safePost.content}
         </div>
 
-        {/* client-side actions: we pass plain strings only */}
         <div className="mt-6 animate-fadeInUp">
           <PostActionsWrapper postId={safePost._id} authorId={safePost.author} />
         </div>
