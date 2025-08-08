@@ -6,7 +6,7 @@ Welcome to **BlogSite**, a modern full-stack blog platform built with the **MERN
 
 ## 🌐 Live Demo
 
-- 🔗 **Frontend (Vercel)**: [https://blogssitesum.netlify.app](https://blog-site-silk-nine.vercel.app/)
+- 🔗 **Frontend (Vercel)**: [(https://blog-site-silk-nine.vercel.app)](https://blog-site-silk-nine.vercel.app/)
 - 🔗 **Backend API (Render)**: [https://blogsite-fxsk.onrender.com](https://blogsite-fxsk.onrender.com)
 
 ---
